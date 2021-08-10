@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <title>Чат программа</title>
+    <style>
+        body {
+            background: #000000;
+            color: aliceblue;
+        }
+        bg-black {
+            background: darkslategrey;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+
+            <h3>input form</h3>
+            <form id="messForm">
+                <label for="login">login</label>
+                <input type="text" name="name" id="login" placeholder="nick" class="form-control bg-black">
+                <br>
+                <label for="message">message</label>
+                <textarea name="message" id="message" class="form-control bg-black" placeholder="input smth"></textarea>
+                <br>
+                <input type="submit" value="submit" class="btn btn-danger" id="submitButton">
+            </form>
+        </div>
+        <div class="col-6">
+            <h3>chat</h3>
+
+            <div id="all_mess"></div>
+        </div>
+    </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const ready = () => {
+        const socket = io.connect()
+
+        const button = document.getElementById("submitButton")
+        const login = document.getElementById("login")
+        const message = document.getElementById("message")
+        const allMessages = document.getElementById("all_mess")
+
+        button.onclick = (event) => {
+            event.preventDefault()
+            socket.emit('send', {
+                login: login.value,
+                msg: message.value
+            })
+            message.value = ''
+        }
+
+        socket.on('write', data => {
+            const message = document.createElement("p")
+            message.innerHTML = data.login + ': ' + data.msg
+            allMessages.append(message)
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", ready)
+</script>
+</body>
+</html>
